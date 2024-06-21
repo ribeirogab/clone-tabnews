@@ -1,3 +1,19 @@
 {
-  "extends": "next/core-web-vitals"
+  "extends": [
+    "@ribeirogab/eslint-config/react",
+    "plugin:tailwindcss/recommended",
+    "next/core-web-vitals"
+  ],
+  "overrides": [
+    {
+      "files": [
+        "*"
+      ],
+      "rules": {
+        "tailwindcss/no-custom-classname": "off",
+        "no-unused-vars": "off",
+        "@typescript-eslint/no-unused-vars": "error"
+      }
+    }
+  ]
 }
