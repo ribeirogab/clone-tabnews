@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
 export enum NodeEnvEnum {
-  Production = 'production',
   Development = 'development',
+  Production = 'production',
 }
 
 const ENV_SCHEMA = z.object({

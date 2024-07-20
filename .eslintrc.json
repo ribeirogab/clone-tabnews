@@ -1,19 +1,85 @@
 {
   "extends": [
-    "@ribeirogab/eslint-config/react",
+    "@rocketseat/eslint-config/next",
     "plugin:tailwindcss/recommended",
     "next/core-web-vitals"
   ],
-  "overrides": [
-    {
-      "files": [
-        "*"
-      ],
-      "rules": {
-        "tailwindcss/no-custom-classname": "off",
-        "no-unused-vars": "off",
-        "@typescript-eslint/no-unused-vars": "error"
+  "rules": {
+    "prettier/prettier": [
+      "error",
+      {
+        "printWidth": 80,
+        "tabWidth": 2,
+        "singleQuote": true,
+        "trailingComma": "all",
+        "arrowParens": "always",
+        "semi": true,
+        "endOfLine": "auto"
       }
-    }
-  ]
+    ],
+    "padding-line-between-statements": [
+      "error",
+      {
+        "blankLine": "always",
+        "prev": "*",
+        "next": [
+          "class",
+          "return",
+          "continue",
+          "break",
+          "throw",
+          "multiline-expression",
+          "block-like",
+          "function",
+          "iife",
+          "export"
+        ]
+      },
+      {
+        "blankLine": "always",
+        "prev": [
+          "multiline-expression",
+          "block-like",
+          "function",
+          "iife",
+          "class",
+          "export"
+        ],
+        "next": "*"
+      },
+      {
+        "blankLine": "any",
+        "prev": [
+          "import"
+        ],
+        "next": [
+          "import"
+        ]
+      },
+      {
+        "blankLine": "any",
+        "prev": [
+          "export"
+        ],
+        "next": [
+          "export"
+        ]
+      }
+    ],
+    "import/order": [
+      "error",
+      {
+        "warnOnUnassignedImports": true,
+        "newlines-between": "always",
+        "alphabetize": {
+          "order": "asc"
+        },
+        "groups": [
+          "builtin",
+          "external",
+          ["internal", "parent", "sibling", "index"]
+        ]
+      }
+    ]
+  }
 }
