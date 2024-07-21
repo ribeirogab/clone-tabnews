@@ -1,4 +1,4 @@
 echo "[Husky] pre-commit"
 npm run lint -- --quiet
 npm run build
-npm run test
+npm run test -- --silent
