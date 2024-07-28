@@ -8,6 +8,8 @@
   },
   "scripts": {
     "test": "vitest run",
+    "test:unit": "vitest --project unit --run",
+    "test:integration": "vitest --project integration --run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:ci": "vitest run --silent --coverage --reporter=junit --outputFile.junit=./test-output/junit.xml",

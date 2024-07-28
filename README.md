@@ -13,3 +13,7 @@ Foram adotadas algumas tecnologias e ferramentas diferentes das usadas no [proje
 - [**Diretório `app` do Next.js**](https://nextjs.org/docs/app) em vez do diretório `pages` utilizado no projeto original
 
 Sinta-se à vontade para explorar o código e comparar como diferentes tecnologias são aplicadas em relação ao [projeto original](https://github.com/filipedeschamps/tabnews.com.br).
+
+## Testes
+
+Para mais informações sobre os padrões de testes adotados neste projeto, consulte o [README dos testes](./tests/README.md).
