@@ -11,7 +11,7 @@ const ENV_SCHEMA = z.object({
 let ENV_VARIABLES: z.infer<typeof ENV_SCHEMA>;
 
 export const parseEnv = (processEnv?: NodeJS.ProcessEnv) => {
-  console.log(' ○ Parsing env variables...');
+  console.log('\n ○ Parsing env variables...');
 
   const parsedEnvs = ENV_SCHEMA.parse(processEnv || process.env);
 
