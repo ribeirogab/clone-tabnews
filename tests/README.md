@@ -16,7 +16,7 @@ Os testes devem ser localizados juntamente com o código que eles testam. Por ex
 
 ### Exceção para Arquivos de Páginas
 
-Os arquivos dentro de `src/app/*` (exceto `src/app/api`) são considerados arquivos de páginas. Os testes para essas páginas ficarão localizados em `tests/app/`. 
+Os arquivos dentro de `src/app/*` (exceto `src/app/api`) são considerados arquivos de páginas. Os testes para essas páginas ficarão localizados em `tests/app/`.
 
 ## Diferença entre Testes Unitários e Testes de Integração
 
