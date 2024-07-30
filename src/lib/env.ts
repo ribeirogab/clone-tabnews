@@ -17,6 +17,21 @@ const PUBLIC_ENV_SCHEMA = z.object({
 const SERVER_ENV_SCHEMA = z
   .object({
     POSTGRES_PASSWORD: z.string(),
+    POSTGRES_HOST: z.string(),
+    POSTGRES_USER: z.string(),
+    POSTGRES_DB: z.string(),
+    POSTGRES_PORT: z
+      .string()
+      .refine((value) => !isNaN(Number(value)), {
+        message: 'Port must be a number',
+      })
+      .transform((value) => Number(value))
+      .refine(
+        (value) => Number.isInteger(value) && value >= 0 && value <= 65535,
+        {
+          message: 'Port must be an integer between 0 and 65535',
+        },
+      ),
   })
   .and(PUBLIC_ENV_SCHEMA);
 

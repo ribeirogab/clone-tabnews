@@ -4,6 +4,11 @@ const EXCLUDE_PATHS: string[] = [];
 
 export default defineConfig({
   test: {
+    forceRerunTriggers: [
+      ...configDefaults.forceRerunTriggers,
+      '**/src/**',
+      '**/infra/**',
+    ],
     exclude: [...configDefaults.exclude, ...EXCLUDE_PATHS],
     coverage: {
       reportsDirectory: './test-output/coverage',

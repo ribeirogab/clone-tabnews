@@ -24,6 +24,7 @@
     "clsx": "^2.1.1",
     "lucide-react": "^0.396.0",
     "next": "14.2.4",
+    "pg": "^8.12.0",
     "react": "^18",
     "react-dom": "^18",
     "tailwind-merge": "^2.3.0",
@@ -33,6 +34,7 @@
   "devDependencies": {
     "@ribeirogab/eslint-config": "^2.0.0",
     "@types/node": "^20",
+    "@types/pg": "^8.11.6",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "@vitest/coverage-v8": "^2.0.3",

@@ -61,6 +61,10 @@ describe('env configuration', () => {
     it('should parse server env variables', () => {
       Object.assign(process.env, {
         POSTGRES_PASSWORD: 'password',
+        POSTGRES_HOST: 'localhost',
+        POSTGRES_USER: 'user',
+        POSTGRES_DB: 'db',
+        POSTGRES_PORT: '5432',
         NODE_ENV: 'production',
       });
 
@@ -70,11 +74,19 @@ describe('env configuration', () => {
       }) as ServerEnv;
 
       expect(parsedEnv.POSTGRES_PASSWORD).toBe('password');
+      expect(parsedEnv.POSTGRES_HOST).toBe('localhost');
+      expect(parsedEnv.POSTGRES_USER).toBe('user');
+      expect(parsedEnv.POSTGRES_DB).toBe('db');
+      expect(parsedEnv.POSTGRES_PORT).toBe(5432);
     });
 
     it('should throw an error if POSTGRES_PASSWORD is missing for server env', () => {
       Object.assign(process.env, {
         POSTGRES_PASSWORD: undefined,
+        POSTGRES_HOST: 'localhost',
+        POSTGRES_USER: 'user',
+        POSTGRES_DB: 'db',
+        POSTGRES_PORT: '5432',
         NODE_ENV: 'production',
       });
 
@@ -105,6 +117,10 @@ describe('env configuration', () => {
     it('should return parsed server environment variables', () => {
       Object.assign(process.env, {
         POSTGRES_PASSWORD: 'password',
+        POSTGRES_HOST: 'localhost',
+        POSTGRES_USER: 'user',
+        POSTGRES_DB: 'db',
+        POSTGRES_PORT: '5432',
         NODE_ENV: 'production',
       });
 
@@ -112,11 +128,19 @@ describe('env configuration', () => {
 
       expect(serverEnvs.NODE_ENV).toBe(NodeEnvEnum.Production);
       expect(serverEnvs.POSTGRES_PASSWORD).toBe('password');
+      expect(serverEnvs.POSTGRES_HOST).toBe('localhost');
+      expect(serverEnvs.POSTGRES_USER).toBe('user');
+      expect(serverEnvs.POSTGRES_DB).toBe('db');
+      expect(serverEnvs.POSTGRES_PORT).toBe(5432);
     });
 
     it('should cache parsed server environment variables', () => {
       Object.assign(process.env, {
         POSTGRES_PASSWORD: 'password',
+        POSTGRES_HOST: 'localhost',
+        POSTGRES_USER: 'user',
+        POSTGRES_DB: 'db',
+        POSTGRES_PORT: '5432',
         NODE_ENV: 'production',
       });
 
