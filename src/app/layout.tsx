@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   title: 'Create Next App',
 };
 
-parseEnv();
+parseEnv({});
 
 export default function RootLayout({
   children,

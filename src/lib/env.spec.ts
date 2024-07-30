@@ -1,15 +1,13 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 
-import { NodeEnvEnum } from './env';
-
-const makeSut = async () => {
-  const { env, parseEnv } = await import('./env');
-
-  return {
-    parseEnv,
-    env,
-  };
-};
+import {
+  NodeEnvEnum,
+  SchemaTypeEnum,
+  parseEnv,
+  getPublicEnvs,
+  getServerEnvs,
+  ServerEnv,
+} from './env';
 
 describe('env configuration', () => {
   const ORIGINAL_ENV = process.env;
@@ -19,50 +17,111 @@ describe('env configuration', () => {
   });
 
   describe('parseEnv', () => {
-    it('should default NODE_ENV to production', async () => {
+    it('should default NODE_ENV to production', () => {
       Object.assign(process.env, { NODE_ENV: undefined });
-      const { parseEnv } = await makeSut();
 
-      const parsedEnv = parseEnv(process.env);
+      const parsedEnv = parseEnv({
+        type: SchemaTypeEnum.Public,
+        processEnv: process.env,
+      });
 
       expect(parsedEnv.NODE_ENV).toBe(NodeEnvEnum.Production);
     });
 
-    it('should parse NODE_ENV as development', async () => {
+    it('should parse NODE_ENV as development', () => {
       Object.assign(process.env, { NODE_ENV: 'development' });
-      const { parseEnv } = await makeSut();
 
-      const parsedEnv = parseEnv(process.env);
+      const parsedEnv = parseEnv({
+        processEnv: process.env,
+        type: SchemaTypeEnum.Public,
+      });
 
       expect(parsedEnv.NODE_ENV).toBe(NodeEnvEnum.Development);
     });
 
-    it('should parse NODE_ENV as production', async () => {
+    it('should parse NODE_ENV as production', () => {
       Object.assign(process.env, { NODE_ENV: 'production' });
-      const { parseEnv } = await makeSut();
 
-      const parsedEnv = parseEnv(process.env);
+      const parsedEnv = parseEnv({
+        processEnv: process.env,
+        type: SchemaTypeEnum.Public,
+      });
 
       expect(parsedEnv.NODE_ENV).toBe(NodeEnvEnum.Production);
     });
 
-    it('should throw an error for invalid NODE_ENV', async () => {
+    it('should throw an error for invalid NODE_ENV', () => {
       Object.assign(process.env, { NODE_ENV: 'invalid_env' });
-      const { parseEnv } = await makeSut();
 
       expect(() => {
-        parseEnv(process.env);
+        parseEnv({ processEnv: process.env, type: SchemaTypeEnum.Public });
+      }).toThrow();
+    });
+
+    it('should parse server env variables', () => {
+      Object.assign(process.env, {
+        POSTGRES_PASSWORD: 'password',
+        NODE_ENV: 'production',
+      });
+
+      const parsedEnv = parseEnv({
+        type: SchemaTypeEnum.Server,
+        processEnv: process.env,
+      }) as ServerEnv;
+
+      expect(parsedEnv.POSTGRES_PASSWORD).toBe('password');
+    });
+
+    it('should throw an error if POSTGRES_PASSWORD is missing for server env', () => {
+      Object.assign(process.env, {
+        POSTGRES_PASSWORD: undefined,
+        NODE_ENV: 'production',
+      });
+
+      expect(() => {
+        parseEnv({ processEnv: process.env, type: SchemaTypeEnum.Server });
       }).toThrow();
     });
   });
 
-  describe('env', () => {
-    it('should return cached environment variables', async () => {
+  describe('getPublicEnvs', () => {
+    it('should return parsed public environment variables', () => {
       Object.assign(process.env, { NODE_ENV: 'development' });
-      const { env } = await makeSut();
+      const publicEnvs = getPublicEnvs();
 
-      const firstCall = env();
-      const secondCall = env();
+      expect(publicEnvs.NODE_ENV).toBe(NodeEnvEnum.Development);
+    });
+
+    it('should cache parsed public environment variables', () => {
+      Object.assign(process.env, { NODE_ENV: 'development' });
+      const firstCall = getPublicEnvs();
+      const secondCall = getPublicEnvs();
+
+      expect(firstCall).toBe(secondCall);
+    });
+  });
+
+  describe('getServerEnvs', () => {
+    it('should return parsed server environment variables', () => {
+      Object.assign(process.env, {
+        POSTGRES_PASSWORD: 'password',
+        NODE_ENV: 'production',
+      });
+
+      const serverEnvs = getServerEnvs();
+
+      expect(serverEnvs.NODE_ENV).toBe(NodeEnvEnum.Production);
+      expect(serverEnvs.POSTGRES_PASSWORD).toBe('password');
+    });
+
+    it('should cache parsed server environment variables', () => {
+      Object.assign(process.env, {
+        POSTGRES_PASSWORD: 'password',
+        NODE_ENV: 'production',
+      });
+
+      const firstCall = getServerEnvs();
+      const secondCall = getServerEnvs();
 
       expect(firstCall).toBe(secondCall);
     });
