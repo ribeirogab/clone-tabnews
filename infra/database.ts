@@ -1,26 +1,83 @@
 import pg, { type QueryConfig, type QueryConfigValues } from 'pg';
 
-import { getServerEnvs } from '@/lib/env';
+import { DatabaseInfo } from '@/infra/interfaces';
+import { Env } from '@/lib/env';
+
 const { Client } = pg;
 
-export const query = async (
-  queryTextOrConfig: string | QueryConfig<unknown[]>,
-  values?: QueryConfigValues<string[]>,
-) => {
-  const env = getServerEnvs();
+export class Database {
+  public static async connect() {
+    console.log('[Database] Connecting to database...');
 
-  const client = new Client({
-    password: env.POSTGRES_PASSWORD,
-    database: env.POSTGRES_DB,
-    host: env.POSTGRES_HOST,
-    port: env.POSTGRES_PORT,
-    user: env.POSTGRES_USER,
-  });
-  await client.connect();
+    const client = new Client({
+      password: Env.server.POSTGRES_PASSWORD,
+      database: Env.server.POSTGRES_DB,
+      host: Env.server.POSTGRES_HOST,
+      port: Env.server.POSTGRES_PORT,
+      user: Env.server.POSTGRES_USER,
+    });
 
-  const result = await client.query(queryTextOrConfig, values);
+    await client.connect();
 
-  await client.end();
+    console.log('[Database] Connected to database');
 
-  return result;
-};
+    return client;
+  }
+
+  public static async disconnect(client: pg.Client) {
+    console.log('[Database] Disconnecting from database...');
+    await client.end();
+    console.log('[Database] Disconnected from database');
+  }
+
+  public static async query(
+    queryTextOrConfig: string | QueryConfig<unknown[]>,
+    values?: QueryConfigValues<string[]>,
+  ) {
+    const client = await this.connect();
+
+    try {
+      const result = await client.query(queryTextOrConfig, values);
+
+      await this.disconnect(client);
+
+      return result;
+    } catch (error) {
+      console.error('[Database] Error executing query', error);
+    } finally {
+      await this.disconnect(client);
+    }
+  }
+
+  public static async getInfo(): Promise<DatabaseInfo> {
+    const client = await this.connect();
+
+    try {
+      const [openedConnectionsResult, maxConnectionsResult, versionResult] =
+        await Promise.all([
+          client.query(
+            'SELECT COUNT(*)::INT FROM pg_stat_activity WHERE datname = $1;',
+            [Env.server.POSTGRES_DB],
+          ),
+          client.query('SHOW max_connections;'),
+          client.query('SHOW server_version;'),
+        ]);
+
+      console.log('openedConnectionsResult', openedConnectionsResult.rows);
+      await this.disconnect(client);
+      const info: DatabaseInfo = {
+        maxConnections: Number(maxConnectionsResult.rows[0]?.max_connections),
+        openedConnections: Number(openedConnectionsResult.rows[0].count),
+        version: versionResult.rows[0]?.server_version || 'unknown',
+      };
+
+      return info;
+    } catch (error) {
+      console.error('[Database] Error getting database info', error);
+
+      throw error;
+    } finally {
+      await this.disconnect(client);
+    }
+  }
+}
