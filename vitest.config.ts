@@ -1,8 +1,10 @@
+import tsconfigPaths from 'vite-tsconfig-paths';
 import { configDefaults, defineConfig } from 'vitest/config';
 
 const EXCLUDE_PATHS: string[] = [];
 
 export default defineConfig({
+  plugins: [tsconfigPaths()],
   test: {
     globals: true,
     forceRerunTriggers: [
