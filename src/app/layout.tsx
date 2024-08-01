@@ -5,7 +5,7 @@ import React from 'react';
 import './globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
 import { ThemeEnum } from '@/enums';
-import { parseEnv } from '@/lib/env';
+import { Env, SchemaTypeEnum } from '@/lib/env';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   title: 'Create Next App',
 };
 
-parseEnv({});
+Env.parse({ type: SchemaTypeEnum.Public });
 
 export default function RootLayout({
   children,

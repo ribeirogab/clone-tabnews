@@ -1,9 +1,28 @@
-import { query } from '@/infra/database';
+import { HttpStatusCodeEnum } from '@/enums';
+import { Database } from '@/infra/database';
+import { StatusRouteGetResponse } from '@/interfaces';
 
 export async function GET() {
-  const result = await query('SELECT 1 + 1');
+  const updatedAt = new Date().toISOString();
 
-  console.log(result.rows);
+  const {
+    version: dbVersion,
+    openedConnections,
+    maxConnections,
+  } = await Database.getInfo();
 
-  return new Response('OK', { status: 200 });
+  const response: StatusRouteGetResponse = {
+    updated_at: updatedAt,
+    dependencies: {
+      database: {
+        opened_connections: openedConnections,
+        max_connections: maxConnections,
+        version: dbVersion,
+      },
+    },
+  };
+
+  return new Response(JSON.stringify(response), {
+    status: HttpStatusCodeEnum.OK,
+  });
 }
