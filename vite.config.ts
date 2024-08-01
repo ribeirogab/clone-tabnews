@@ -4,6 +4,7 @@ const EXCLUDE_PATHS: string[] = [];
 
 export default defineConfig({
   test: {
+    globals: true,
     forceRerunTriggers: [
       ...configDefaults.forceRerunTriggers,
       '**/src/**',

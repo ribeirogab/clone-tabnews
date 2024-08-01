@@ -1,5 +1,3 @@
-import { describe, expect, it } from 'vitest';
-
 const API_BASE_URL = 'http://localhost:3000';
 
 describe('/api/v1/status', () => {

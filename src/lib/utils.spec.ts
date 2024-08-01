@@ -1,5 +1,3 @@
-import { describe, it, expect } from 'vitest';
-
 import { cn } from './utils';
 
 describe('file with general utility functions', () => {
