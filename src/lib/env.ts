@@ -44,43 +44,45 @@ const SCHEMAS = {
   [SchemaTypeEnum.Server]: SERVER_ENV_SCHEMA,
 };
 
+// Memory cache
 let PUBLIC_ENV_VARIABLES: PublicEnv;
 let SERVER_ENV_VARIABLES: ServerEnv;
 
-export const parseEnv = ({
-  type = SchemaTypeEnum.Public,
-  processEnv = process.env,
-}: {
-  processEnv?: NodeJS.ProcessEnv;
-  type?: SchemaTypeEnum;
-}) => {
-  console.log(`\n ○ Parsing ${type} env variables...`);
+export class Env {
+  public static parse({
+    type = SchemaTypeEnum.Public,
+    processEnv = process.env,
+  }: {
+    processEnv?: NodeJS.ProcessEnv;
+    type?: SchemaTypeEnum;
+  }) {
+    console.log(`\n ○ Parsing ${type} env variables...`);
 
-  const parsedEnvs = SCHEMAS[type].parse(processEnv);
+    const parsedEnvs = SCHEMAS[type].parse(processEnv);
+    const total = Object.keys(parsedEnvs).length;
 
-  console.log(
-    ` ✓ Env (${type}) variables parsed! (${parseEnv.length} variables)`,
-  );
+    console.log(` ✓ Env (${type}) variables parsed! (${total}) variables)`);
 
-  return parsedEnvs;
-};
-
-export const getPublicEnvs = (): PublicEnv => {
-  if (!PUBLIC_ENV_VARIABLES) {
-    PUBLIC_ENV_VARIABLES = parseEnv({
-      type: SchemaTypeEnum.Public,
-    });
+    return parsedEnvs;
   }
 
-  return PUBLIC_ENV_VARIABLES;
-};
+  public static get public() {
+    if (!PUBLIC_ENV_VARIABLES) {
+      PUBLIC_ENV_VARIABLES = this.parse({
+        type: SchemaTypeEnum.Public,
+      });
+    }
 
-export const getServerEnvs = (): ServerEnv => {
-  if (!SERVER_ENV_VARIABLES) {
-    SERVER_ENV_VARIABLES = parseEnv({
-      type: SchemaTypeEnum.Server,
-    }) as z.infer<typeof SERVER_ENV_SCHEMA>;
+    return PUBLIC_ENV_VARIABLES;
   }
 
-  return SERVER_ENV_VARIABLES;
-};
+  public static get server() {
+    if (!SERVER_ENV_VARIABLES) {
+      SERVER_ENV_VARIABLES = this.parse({
+        type: SchemaTypeEnum.Server,
+      }) as z.infer<typeof SERVER_ENV_SCHEMA>;
+    }
+
+    return SERVER_ENV_VARIABLES;
+  }
+}

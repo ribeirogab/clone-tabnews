@@ -1,11 +1,4 @@
-import {
-  NodeEnvEnum,
-  SchemaTypeEnum,
-  parseEnv,
-  getPublicEnvs,
-  getServerEnvs,
-  ServerEnv,
-} from './env';
+import { NodeEnvEnum, SchemaTypeEnum, Env, ServerEnv } from './env';
 
 describe('env configuration', () => {
   const ORIGINAL_ENV = process.env;
@@ -14,11 +7,11 @@ describe('env configuration', () => {
     process.env = { ...ORIGINAL_ENV };
   });
 
-  describe('parseEnv', () => {
+  describe('Env.parse', () => {
     it('should default NODE_ENV to production', () => {
       Object.assign(process.env, { NODE_ENV: undefined });
 
-      const parsedEnv = parseEnv({
+      const parsedEnv = Env.parse({
         type: SchemaTypeEnum.Public,
         processEnv: process.env,
       });
@@ -29,7 +22,7 @@ describe('env configuration', () => {
     it('should parse NODE_ENV as development', () => {
       Object.assign(process.env, { NODE_ENV: 'development' });
 
-      const parsedEnv = parseEnv({
+      const parsedEnv = Env.parse({
         processEnv: process.env,
         type: SchemaTypeEnum.Public,
       });
@@ -40,7 +33,7 @@ describe('env configuration', () => {
     it('should parse NODE_ENV as production', () => {
       Object.assign(process.env, { NODE_ENV: 'production' });
 
-      const parsedEnv = parseEnv({
+      const parsedEnv = Env.parse({
         processEnv: process.env,
         type: SchemaTypeEnum.Public,
       });
@@ -52,7 +45,7 @@ describe('env configuration', () => {
       Object.assign(process.env, { NODE_ENV: 'invalid_env' });
 
       expect(() => {
-        parseEnv({ processEnv: process.env, type: SchemaTypeEnum.Public });
+        Env.parse({ processEnv: process.env, type: SchemaTypeEnum.Public });
       }).toThrow();
     });
 
@@ -66,7 +59,7 @@ describe('env configuration', () => {
         NODE_ENV: 'production',
       });
 
-      const parsedEnv = parseEnv({
+      const parsedEnv = Env.parse({
         type: SchemaTypeEnum.Server,
         processEnv: process.env,
       }) as ServerEnv;
@@ -89,29 +82,28 @@ describe('env configuration', () => {
       });
 
       expect(() => {
-        parseEnv({ processEnv: process.env, type: SchemaTypeEnum.Server });
+        Env.parse({ processEnv: process.env, type: SchemaTypeEnum.Server });
       }).toThrow();
     });
   });
 
-  describe('getPublicEnvs', () => {
+  describe('Env.public', () => {
     it('should return parsed public environment variables', () => {
       Object.assign(process.env, { NODE_ENV: 'development' });
-      const publicEnvs = getPublicEnvs();
 
-      expect(publicEnvs.NODE_ENV).toBe(NodeEnvEnum.Development);
+      expect(Env.public.NODE_ENV).toBe(NodeEnvEnum.Development);
     });
 
     it('should cache parsed public environment variables', () => {
       Object.assign(process.env, { NODE_ENV: 'development' });
-      const firstCall = getPublicEnvs();
-      const secondCall = getPublicEnvs();
+      const firstCall = Env.public;
+      const secondCall = Env.public;
 
       expect(firstCall).toBe(secondCall);
     });
   });
 
-  describe('getServerEnvs', () => {
+  describe('Env.server', () => {
     it('should return parsed server environment variables', () => {
       Object.assign(process.env, {
         POSTGRES_PASSWORD: 'password',
@@ -122,14 +114,12 @@ describe('env configuration', () => {
         NODE_ENV: 'production',
       });
 
-      const serverEnvs = getServerEnvs();
-
-      expect(serverEnvs.NODE_ENV).toBe(NodeEnvEnum.Production);
-      expect(serverEnvs.POSTGRES_PASSWORD).toBe('password');
-      expect(serverEnvs.POSTGRES_HOST).toBe('localhost');
-      expect(serverEnvs.POSTGRES_USER).toBe('user');
-      expect(serverEnvs.POSTGRES_DB).toBe('db');
-      expect(serverEnvs.POSTGRES_PORT).toBe(5432);
+      expect(Env.server.NODE_ENV).toBe(NodeEnvEnum.Production);
+      expect(Env.server.POSTGRES_PASSWORD).toBe('password');
+      expect(Env.server.POSTGRES_HOST).toBe('localhost');
+      expect(Env.server.POSTGRES_USER).toBe('user');
+      expect(Env.server.POSTGRES_DB).toBe('db');
+      expect(Env.server.POSTGRES_PORT).toBe(5432);
     });
 
     it('should cache parsed server environment variables', () => {
@@ -142,8 +132,8 @@ describe('env configuration', () => {
         NODE_ENV: 'production',
       });
 
-      const firstCall = getServerEnvs();
-      const secondCall = getServerEnvs();
+      const firstCall = Env.server;
+      const secondCall = Env.server;
 
       expect(firstCall).toBe(secondCall);
     });
