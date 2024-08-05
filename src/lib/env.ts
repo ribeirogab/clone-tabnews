@@ -18,7 +18,7 @@ const SERVER_ENV_SCHEMA = z
   .object({
     POSTGRES_SSL: z
       .string()
-      .default('true')
+      .default('false')
       .transform((value) => {
         if (!['true', 'false'].includes(value) && typeof value === 'string') {
           try {
