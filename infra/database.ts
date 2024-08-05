@@ -7,21 +7,32 @@ const { Client } = pg;
 
 export class Database {
   public static async connect() {
-    console.log('[Database] Connecting to database...');
+    let client: pg.Client | undefined;
 
-    const client = new Client({
-      password: Env.server.POSTGRES_PASSWORD,
-      database: Env.server.POSTGRES_DB,
-      host: Env.server.POSTGRES_HOST,
-      port: Env.server.POSTGRES_PORT,
-      user: Env.server.POSTGRES_USER,
-    });
+    try {
+      console.log('[Database] Connecting to database...');
 
-    await client.connect();
+      client = new Client({
+        password: Env.server.POSTGRES_PASSWORD,
+        database: Env.server.POSTGRES_DB,
+        host: Env.server.POSTGRES_HOST,
+        port: Env.server.POSTGRES_PORT,
+        user: Env.server.POSTGRES_USER,
+      });
 
-    console.log('[Database] Connected to database');
+      await client.connect();
 
-    return client;
+      console.log('[Database] Connected to database');
+
+      return client;
+    } catch (error) {
+      console.error('[Database] Error connecting to database', error);
+
+      // Ensure the connection is closed in case of an error
+      await client?.end();
+
+      throw error;
+    }
   }
 
   public static async disconnect(client: pg.Client) {
@@ -53,6 +64,8 @@ export class Database {
     const client = await this.connect();
 
     try {
+      console.log('[Database] Getting database info...');
+
       const [openedConnectionsResult, maxConnectionsResult, versionResult] =
         await Promise.all([
           client.query(
@@ -63,13 +76,14 @@ export class Database {
           client.query('SHOW server_version;'),
         ]);
 
-      console.log('openedConnectionsResult', openedConnectionsResult.rows);
       await this.disconnect(client);
       const info: DatabaseInfo = {
         maxConnections: Number(maxConnectionsResult.rows[0]?.max_connections),
         openedConnections: Number(openedConnectionsResult.rows[0].count),
         version: versionResult.rows[0]?.server_version || 'unknown',
       };
+
+      console.log('[Database] Got database info', info);
 
       return info;
     } catch (error) {
