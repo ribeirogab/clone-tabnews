@@ -16,6 +16,41 @@ const PUBLIC_ENV_SCHEMA = z.object({
 
 const SERVER_ENV_SCHEMA = z
   .object({
+    POSTGRES_SSL: z
+      .string()
+      .default('true')
+      .transform((value) => {
+        if (!['true', 'false'].includes(value) && typeof value === 'string') {
+          try {
+            const parsed = JSON.parse(value);
+
+            return {
+              rejectUnauthorized: parsed.rejectUnauthorized,
+              ca: parsed.ca,
+            };
+          } catch {
+            throw new Error('Invalid JSON string for POSTGRES_SSL');
+          }
+        }
+
+        return value === 'true';
+      })
+      .refine(
+        (value) => {
+          if (typeof value === 'object') {
+            return (
+              typeof value.rejectUnauthorized === 'boolean' &&
+              typeof value.ca === 'string'
+            );
+          }
+
+          return true;
+        },
+        {
+          message:
+            'POSTGRES_SSL must have valid rejectUnauthorized and ca properties when provided as an object',
+        },
+      ),
     POSTGRES_PASSWORD: z.string(),
     POSTGRES_HOST: z.string(),
     POSTGRES_USER: z.string(),

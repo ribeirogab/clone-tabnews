@@ -18,6 +18,7 @@ export class Database {
         host: Env.server.POSTGRES_HOST,
         port: Env.server.POSTGRES_PORT,
         user: Env.server.POSTGRES_USER,
+        ssl: Env.server.POSTGRES_SSL,
       });
 
       await client.connect();
