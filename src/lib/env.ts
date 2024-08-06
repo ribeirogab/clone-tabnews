@@ -20,32 +20,27 @@ const SERVER_ENV_SCHEMA = z
       .string()
       .default('false')
       .transform((value) => {
-        if (!['true', 'false'].includes(value) && typeof value === 'string') {
-          try {
-            const parsed = JSON.parse(value);
-
-            return {
-              rejectUnauthorized: parsed.rejectUnauthorized,
-              ca: parsed.ca,
-            };
-          } catch {
-            throw new Error('Invalid JSON string for POSTGRES_SSL');
-          }
+        if (value === 'true' || value === 'false') {
+          return value === 'true';
         }
 
-        return value === 'true';
+        try {
+          const parsed = JSON.parse(value);
+
+          return {
+            rejectUnauthorized: parsed.rejectUnauthorized,
+            ca: parsed.ca,
+          };
+        } catch {
+          throw new Error('Invalid JSON string for POSTGRES_SSL');
+        }
       })
       .refine(
-        (value) => {
-          if (typeof value === 'object') {
-            return (
-              typeof value.rejectUnauthorized === 'boolean' &&
+        (value) =>
+          typeof value === 'object'
+            ? typeof value.rejectUnauthorized === 'boolean' &&
               typeof value.ca === 'string'
-            );
-          }
-
-          return true;
-        },
+            : true,
         {
           message:
             'POSTGRES_SSL must have valid rejectUnauthorized and ca properties when provided as an object',
