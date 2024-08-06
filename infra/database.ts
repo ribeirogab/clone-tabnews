@@ -10,7 +10,9 @@ export class Database {
     let client: pg.Client | undefined;
 
     try {
-      console.log('[Database] Connecting to database...');
+      console.log(
+        `[Database] Connecting to database ${Env.server.POSTGRES_DB}...`,
+      );
 
       client = new Client({
         password: Env.server.POSTGRES_PASSWORD,
