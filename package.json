@@ -22,10 +22,9 @@
     "test:ci": "npm run vitest -- run --silent --coverage --reporter=junit --outputFile.junit=./test-output/junit.xml",
     "lint": "next lint",
     "prepare": "husky",
-    "migrate": "node node-pg-migrate.config.mjs && ts-node --project tsconfig.migrations.json node-pg-migrate.mjs -j ts -m 'infra/database/migrations'",
-    "migrate:create": "npm run migrate -- create",
-    "migrate:up": "npm run migrate -- --envPath .env.migrations up",
-    "migrate:down": "npm run migrate -- --envPath .env.migrations down"
+    "migrate:create": "node node-pg-migrate.mjs create",
+    "migrate:up": "node node-pg-migrate.mjs up",
+    "migrate:down": "node node-pg-migrate.mjs down"
   },
   "dependencies": {
     "class-variance-authority": "^0.7.0",

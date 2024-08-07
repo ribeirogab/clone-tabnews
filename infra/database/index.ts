@@ -1,3 +1,6 @@
+import path from 'node:path';
+
+import migrationsRunner from 'node-pg-migrate';
 import pg, { type QueryConfig, type QueryConfigValues } from 'pg';
 
 import { DatabaseInfo } from '@/infra/interfaces';
@@ -6,6 +9,18 @@ import { Env } from '@/lib/env';
 const { Client } = pg;
 
 export class Database {
+  private static migrationsTable = 'pgmigrations';
+  private static migrationsDirectory = path.join(
+    path.resolve(),
+    'infra',
+    'database',
+    'migrations',
+  );
+
+  private static get databaseUrl() {
+    return `postgresql://${Env.server.POSTGRES_USER}:${Env.server.POSTGRES_PASSWORD}@${Env.server.POSTGRES_HOST}:${Env.server.POSTGRES_PORT}/${Env.server.POSTGRES_DB}`;
+  }
+
   public static async connect() {
     let client: pg.Client | undefined;
 
@@ -96,5 +111,18 @@ export class Database {
     } finally {
       await this.disconnect(client);
     }
+  }
+
+  public static async migrateUp({ dryRun = true }: { dryRun: boolean }) {
+    const migrations = await migrationsRunner({
+      migrationsTable: this.migrationsTable,
+      databaseUrl: this.databaseUrl,
+      dir: this.migrationsDirectory,
+      direction: 'up',
+      verbose: true,
+      dryRun,
+    });
+
+    return migrations;
   }
 }

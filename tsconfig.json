@@ -31,9 +31,8 @@
     "test.mjs"
   ],
   "exclude": ["node_modules"],
-  "ts-node": {
-    "moduleTypes": {
-      "infra/database/migrations": "cjs"
-    }
+
+  "moduleTypes": {
+    "infra/database/migrations": "cjs"
   }
 }

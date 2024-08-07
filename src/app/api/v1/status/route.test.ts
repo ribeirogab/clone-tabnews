@@ -2,14 +2,15 @@ import { API_BASE_URL } from '@/constants';
 import { HttpStatusCodeEnum } from '@/enums';
 import { StatusRouteGetResponse } from '@/interfaces';
 
+const API_URL = `${API_BASE_URL}/api/v1/status`;
+
 describe('/api/v1/status', () => {
   describe('GET', () => {
-    it('should return a response with status 200 and body "OK"', async () => {
-      const response = await fetch(`${API_BASE_URL}/api/v1/status`);
+    it('should return a response with status 200 and body "OK" and return status info', async () => {
+      const response = await fetch(API_URL);
       const data: StatusRouteGetResponse = await response.json();
 
       expect(response.status).toBe(HttpStatusCodeEnum.OK);
-
       expect(data.dependencies.database.version).toStrictEqual('16.3');
 
       // Check strict `response` properties
