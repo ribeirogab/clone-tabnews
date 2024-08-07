@@ -1,6 +1,6 @@
 # Clone do TabNews
 
-> **Este repositório está atualizado até o dia 21 do curso.**
+> **Este repositório está atualizado até o dia 23 do curso.**
 
 Este repositório visa ser um clone do site <https://www.tabnews.com.br/> e está sendo desenvolvido como parte do [curso](https://curso.dev/) de [Felipe Deschamps](https://github.com/filipedeschamps).
 
